@@ -79,7 +79,7 @@ Copy one of the existing use programs such as wc.c to use as a framework for you
 
 ## The scheduler
 
-You will change the round robin scheduler in proc.c void scheduler(void) to be a priority scheduler.  Most of the code for the scheduler is quite localized and can be found in proc.c; the associated header file, proc.h is also quite useful to examine. To change the scheduler, not much needs to be done; study its control flow and then try some small changes.  If the running process has a priority tie with another process in the queue then the non-running process will run.
+You will change the round robin scheduler in proc.c void scheduler(void) to be a priority scheduler.  Most of the code for the scheduler is quite localized and can be found in proc.c; the associated header file, proc.h is also quite useful to examine. To change the scheduler, not much needs to be done; study its control flow and then try some small changes.  If the running process has a priority tie with another process in the queue then the non-running process will run.  Once a process exceeds its time quantum it will yield the CPU.
 
 ### Aging 
 
