@@ -34,7 +34,7 @@ You will implement a system call that will set the priority of a process.  Valid
 This system call sets the effective priority of the process with the given pid. This routine should return 0 if successful, and -1 otherwise (if, for example, the caller passes in an invalid pid or a priority < -20 or > 20.
 
 ### int getpinfo(struct pstat *)
-The second is int getpinfo(struct pstat *). This routine returns some information about all running processes, including how many times each has been chosen to run and the process ID of each. You will use this system call to build a variant of the command line program ps, which can then be called to see what is going on. The structure pstat is defined below; note, you cannot change this structure, and must use it exactly as is. This routine should return 0 if successful, and -1 otherwise (if, for example, a bad or NULL pointer is passed into the kernel).
+The next is int getpinfo(struct pstat *). This routine returns some information about all running processes, including how many times each has been chosen to run and the process ID of each. You will use this system call to build a variant of the command line program ps, which can then be called to see what is going on. The structure pstat is defined below; note, you cannot change this structure, and must use it exactly as is. This routine should return 0 if successful, and -1 otherwise (if, for example, a bad or NULL pointer is passed into the kernel). getpinfo will read from the process table and populate the pstat function and then copy out the pstat function.
 
 You'll need to understand how to fill in the structure pstat in the kernel and pass the results to user space. The structure should look like what you see here, in a file you'll have to include called pstat.h:
 
@@ -45,13 +45,13 @@ You'll need to understand how to fill in the structure pstat in the kernel and p
 #include "param.h"
 
 struct pstat {
-  char name[NPROC][16];        // name of the process
-  enum procstate state[NPROC]; // state of the process   
-  int inuse[NPROC];            // whether this slot of the process table is in use (1 or 0)
-  int effective_priority       // the effective priority of the process
-  int real_priority            // the real priority of the process
-  int pid[NPROC];              // the PID of each process
-  int ticks[NPROC];            // the number of ticks each process has accumulated 
+  char name[NPROC][16];          // name of the process
+  enum procstate state[NPROC];   // state of the process   
+  int inuse[NPROC];              // whether this slot of the process table is in use (1 or 0)
+  int effective_priority[NPROC]; // the effective priority of the process
+  int real_priority[NPROC];      // the real priority of the process
+  int pid[NPROC];                // the PID of each process
+  int ticks[NPROC];              // the number of ticks each process has accumulated 
 };
 
 #endif // _PSTAT_H_
@@ -75,7 +75,7 @@ ps      6       RUNNING     20
 ```
 ### Hint
 
-Copy one of the existing use programs such as wc.c to use as a framework for your user application.
+Copy one of the existing use programs such as wc.c to use as a framework for your user application.  Your ps program will call the getpinfo system call.
 
 ## The scheduler
 
