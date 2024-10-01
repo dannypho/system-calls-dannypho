@@ -27,7 +27,7 @@ Every time these two values are read or set then the p->lock must be acquired an
 
 ## System Calls
 
-### int setPrority( int priority )
+### int setPrority( int pid, int priority )
 You will implement a system call that will set the priority of a process.  Valid priority levels are -20 to 20.  You will store the priority of a process in its process control block as the process's real priority.  This routine should return 0 if successful, and -1 otherwise (if, for example, the caller passes in an invalid prority).
 
 ### int setEffectivePriority( int pid, int priority )
