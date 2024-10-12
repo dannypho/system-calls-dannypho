@@ -83,3 +83,21 @@ uint64 sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+uint64 sys_setPriority(int pid, int priority)
+{
+  //setPriority
+  return 0;
+}
+
+uint64 sys_setEffectivePriority(int pid, int priority)
+{
+  //setEffectivePriority
+  return 0;
+}
+
+uint64 sys_getpinfo(struct pstat *info)
+{
+  //getpinfo
+  return 0;
+}
