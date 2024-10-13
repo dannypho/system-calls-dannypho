@@ -6,7 +6,6 @@
 #include "process.h"
 #include "syscall.h"
 #include "defs.h"
-#include "pstat.h"
 
 // Fetch the uint64 at addr from the current process.
 int fetchaddr(uint64 addr, uint64 *ip)
@@ -97,9 +96,9 @@ extern uint64 sys_unlink(void);
 extern uint64 sys_link(void);
 extern uint64 sys_mkdir(void);
 extern uint64 sys_close(void);
-extern uint64 sys_setPriority(int, int);
-extern uint64 sys_setEffectivePriority(int, int);
-extern uint64 sys_getpinfo(struct pstat*);
+extern uint64 sys_setPriority(void);
+extern uint64 sys_setEffectivePriority(void);
+extern uint64 sys_getpinfo(void);
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.

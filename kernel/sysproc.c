@@ -84,19 +84,19 @@ uint64 sys_uptime(void)
   return xticks;
 }
 
-uint64 sys_setPriority(int pid, int priority)
+uint64 sys_setPriority(void)
 {
   //setPriority
   return 0;
 }
 
-uint64 sys_setEffectivePriority(int pid, int priority)
+uint64 sys_setEffectivePriority(void)
 {
   //setEffectivePriority
   return 0;
 }
 
-uint64 sys_getpinfo(struct pstat *info)
+uint64 sys_getpinfo(void)
 {
   //getpinfo
   return 0;

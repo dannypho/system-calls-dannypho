@@ -36,6 +36,6 @@ entry("getpid");
 entry("sbrk");
 entry("sleep");
 entry("uptime");
-entry("setPriority")
-entry("setEffectivePriority")
+entry("setPriority");
+entry("setEffectivePriority");
 entry("getpinfo");
