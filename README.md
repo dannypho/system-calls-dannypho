@@ -1,129 +1,101 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/0q4nEy3y)
-[![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-2972f46106e565e64193e422d61a12cf1da4916b45550586e14ef0a7c637dd04.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=16280848)
-In this assignment you will be implementing a priority scheduler, the user program _ps_, a number of system calls, and a test application.
+# xv6 System Call Extension
 
-You must use a GitHub Codespace to develop this assignment.
+This project extends the `xv6` operating system to include priority-based scheduling, new system calls, and a custom `ps` user application. The modifications showcase my understanding of operating system internals, including process control, system call implementation, and kernel-space to user-space communication.
 
-## Reading
-To prepare yourself for the assignment read the following sections from the [xv6 book](documentation\book-riscv-rev3.pdf):
+---
 
-- 2.2 User mode, supervisor mode, and system calls
-- 2.3 Kernel organization
-- 2.4 Code: xv6 organization
-- 2.5 Process overview
-- 2.6: Code: starting xv6, the first process and system call
+## Features Implemented
 
-- 4.1 RISC-V trap machinery
-- 4.2 Traps from user space
-- 4.3 Code: Calling system calls
-- 4.4 Code: System call arguments
-- 4.5 Traps from kernel space
+### 1. **Process Control Block Enhancements**
+The process control block (`struct proc`) was modified to include the following fields:
+- `real_priority`: The default priority of the process (range: `-20` to `20`).
+- `effective_priority`: The current priority of the process, which may change due to aging or manual adjustments.
 
-- All of section 7 Scheduling
+Both fields are protected by the `p->lock` to ensure thread safety during access and modification.
 
-## Process Control Block
-You will modify the process control block to include the effective priority and real priority of a process.  The priority must be in the p->lock section of the process.  All processes default to a priority of 0. 
+---
 
-### Hint
-Every time these two values are read or set then the p->lock must be acquired and then released.
+### 2. **System Calls**
 
-## System Calls
+`int setPriority(int pid, int priority)`
+- **Purpose**: Sets the `real_priority` of a process identified by its PID.
+- **Validation**: Ensures the priority is within the range `-20` to `20`.
+- **Return Value**:
+  - `0` on success.
+  - `-1` if the priority is invalid or the PID does not exist.
 
-### int setPrority( int pid, int priority )
-You will implement a system call that will set the priority of a process.  Valid priority levels are -20 to 20.  You will store the priority of a process in its process control block as the process's real priority.  This routine should return 0 if successful, and -1 otherwise (if, for example, the caller passes in an invalid prority).
+`int setEffectivePriority(int pid, int priority)`
+- **Purpose**: Sets the `effective_priority` of a process identified by its PID.
+- **Validation**: Ensures the priority is within the range `-20` to `20`.
+- **Return Value**:
+  - `0` on success.
+  - `-1` if the priority is invalid or the PID does not exist.
 
-### int setEffectivePriority( int pid, int priority )
-This system call sets the effective priority of the process with the given pid. This routine should return 0 if successful, and -1 otherwise (if, for example, the caller passes in an invalid pid or a priority < -20 or > 20.
+`int getpinfo(struct pstat *)`
+- **Purpose**: Retrieves information about all processes in the system, including their names, states, priorities, and accumulated ticks.
+- **Validation**: Checks the pointer passed from user space for validity and safely copies data from kernel space to user space.
+- **Return Value**:
+  - `0` on success.
+  - `-1` if the pointer is invalid.
 
-### int getpinfo(struct pstat *)
-The next is int getpinfo(struct pstat *). This routine returns some information about all running processes, including how many times each has been chosen to run and the process ID of each. You will use this system call to build a variant of the command line program ps, which can then be called to see what is going on. The structure pstat is defined below; note, you cannot change this structure, and must use it exactly as is. This routine should return 0 if successful, and -1 otherwise (if, for example, a bad or NULL pointer is passed into the kernel). getpinfo will read from the process table and populate the pstat function and then copy out the pstat function.
+---
 
-You'll need to understand how to fill in the structure pstat in the kernel and pass the results to user space. The structure should look like what you see here, in a file you'll have to include called pstat.h:
+### 3. **Custom `ps` Command**
+A new user-space application, `ps`, was implemented to display process information using the `getpinfo` system call. The output includes:
+- Process name
+- PID
+- State (e.g., RUNNING, SLEEPING)
+- Real priority
 
-```c
-#ifndef _PSTAT_H_
-#define _PSTAT_H_
+**Example Output:**
 
-#include "param.h"
 
-struct pstat {
-  char name[NPROC][16];          // name of the process
-  enum procstate state[NPROC];   // state of the process   
-  int inuse[NPROC];              // whether this slot of the process table is in use (1 or 0)
-  int effective_priority[NPROC]; // the effective priority of the process
-  int real_priority[NPROC];      // the real priority of the process
-  int pid[NPROC];                // the PID of each process
-  int ticks[NPROC];              // the number of ticks each process has accumulated 
-};
-
-#endif // _PSTAT_H_
-
+```bash
+NAME    PID     STATUS      PRIORITY
+init    1       SLEEPING    0
+sh      2       SLEEPING    0
+test    4       RUNNING    -10
+ps      6       RUNNING     20
 ```
 
-### Hint
+## Files Modified
 
-Good examples of how to pass arguments into the kernel are found in existing system calls. In particular, follow the path of read(), which will lead you to sys_read(), which will show you how to use argptr() (and related calls) to obtain a pointer that has been passed into the kernel. Note how careful the kernel is with pointers passed from user space -- they are a security threat, and thus must be checked very carefully before usage. Use either_copyout() to copy data from kernel space to user space.  You can find it in process.c For either_copyout, if user_dst==1, then dst is a user virtual address (user space) otherwise, dst is a kernel address.
+__Kernel Files__
 
-## ps
+* proc.h: Added fields to struct proc.
 
-Your ps application will print the following:
+* proc.c:
 
-```
-NAME    PID     STATUS      PRIORITY    
-init    1       SLEEPING    1     
-sh      2       SLEEPING    1  
-test    4       SLEEPING    -10      
-ps      6       RUNNING     20  
-```
-### Hint
+  * Implemented the logic for new system calls.
 
-Copy one of the existing use programs such as wc.c to use as a framework for your user application.  Your ps program will call the getpinfo system call.
+  * Enhanced process scheduling logic to incorporate priorities (planned).
 
-## The scheduler
+* sysproc.c: Added system call implementations.
 
-You will change the round robin scheduler in proc.c void scheduler(void) to be a priority scheduler.  Most of the code for the scheduler is quite localized and can be found in proc.c; the associated header file, proc.h is also quite useful to examine. To change the scheduler, not much needs to be done; study its control flow and then try some small changes.  If the running process has a priority tie with another process in the queue then the non-running process will run.  Once a process exceeds its time quantum it will yield the CPU.
+__User Space__
 
-### Aging 
+* ps.c: New user application to display process information.
 
-If a process has not run for 10 ticks of the scheduler at its current effective priority level then you will raise the effective priority level by 1.  Once a process runs you will set its effective priority back to its real priority.
+## How to Build and Run
 
-
-## Graph and Test Application
-
-You'll have to make a graph for this assignment. The graph should show the number of time slices a set of three processes receives over time, where the processes have a priority of -20, 0, and 20. The graph is likely to be pretty boring, but should clearly show that your scheduler works as desired.  The graph must be submitted as a PDF file at the top level of your repo.
-
-To gather this data you will need to write an application that forks three children and each child runs and prints their pid.  From the console output you can determine the number of times each ran.
-
-## SUBMITTING
-
-Push all your changes to your main branch.  
-
-## BUILDING AND RUNNING XV6
-
-### To build the kernel:
-```
+1. Build the Kernel
+```bash
 make
 ```
 
-### To build the userspace applications and run the OS
-```
+2. Run xv6
+```bash
 make qemu
 ```
 
-### To exit xv6
+4. Test the ps Application
+
+Inside the xv6 shell:
+```bash
+ps
 ```
+5. To exit xv6
+```bash
 ctrl-a x
 ```
-
-## Administrative
-
-This assignment must be coded in C. Any other language will result in 0 points. Your programs will be compiled and graded on the course GitHub Codespace. Code that does not compile with the provided makefile will result in a 0.
-
-There are coding resources and working code you may use in the course GitHub repositories.  You are free to use any of that code in your program if needed. You may use no other outside code.
-
-## Academic Integrity
-This assignment must be 100% your own work. No code may be copied from friends,  previous students, books, web pages, etc. All code submitted is automatically checked 
-against a database of previous semester’s graded assignments, current student’s code and common web sources. By submitting your code on GitHub you are attesting that 
-you have neither given nor received unauthorized assistance on this work. Code that is copied from an external source or used as inspiration, excluding the 
-course github, will result in a 0 for the assignment and referral to the Office of Student Conduct.
 
