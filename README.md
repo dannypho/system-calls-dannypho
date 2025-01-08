@@ -68,6 +68,8 @@ __Kernel Files__
 
 __User Space__
 
+* `user.h`: Added three system calls making them available to user space programs in xv6
+* `usys.pl`: Added entries for the new system calls to generate assembly stubs, enabling user programs to invoke them via standard syscall mechanisms.
 * `ps.c`: New user application to display process information.
 
 ## How to Build and Run
