@@ -1,6 +1,6 @@
 # xv6 System Call Extension
 
-This project extends the `xv6` operating system to include priority-based scheduling, new system calls, and a custom `ps` user application. The modifications showcase my understanding of operating system internals, including process control, system call implementation, and kernel-space to user-space communication.
+This project extends the `xv6` operating system to include new system calls, and a custom `ps` user application.
 
 ## Features Implemented
 
