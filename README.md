@@ -86,7 +86,6 @@ make qemu
 
 3. Test the ps Application
 
-Inside the xv6 shell:
 ```bash
 ps
 ```
