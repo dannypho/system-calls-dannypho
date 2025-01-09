@@ -84,13 +84,13 @@ make
 make qemu
 ```
 
-4. Test the ps Application
+3. Test the ps Application
 
 Inside the xv6 shell:
 ```bash
 ps
 ```
-5. To exit xv6
+4. To exit xv6
 ```bash
 ctrl-a x
 ```
